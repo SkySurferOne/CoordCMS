@@ -1,0 +1,22 @@
+@(events: Seq[Event])
+
+@listItem(event: Event) = {
+    <li class="event-item">
+        <div>
+            <h2>@event.name</h2>
+            <p>@event.description</p>
+        </div>
+    </li>
+}
+
+<form action="/event" method="POST">
+    <input name="name" type="text" placeholder="name"/>
+    <input name="description" type="text" placeholder="description"/>
+    <input type="submit"/>
+</form>
+
+<ul class="events-list">
+    @for(event <- events) {
+        @listItem(event)
+    }
+</ul>

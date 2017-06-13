@@ -1,5 +1,11 @@
-@()
+@(events: Seq[Event])
+
+@for(e <- events) {
+    @e.name
+}
 
 @main("CoordDMS") {
   <h1>Welcome to Play!</h1>
+
+  @eventList(events)
 }
