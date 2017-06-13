@@ -1,5 +1,6 @@
 package controllers
 
+import java.text.SimpleDateFormat
 import javax.inject._
 
 import dao.EventDAO
@@ -16,10 +17,4 @@ class HomeController @Inject()(eventDAO: EventDAO)(implicit executionContext: Ex
     eventDAO.all().map(events => Ok(views.html.index(events)))
   }
 
-  def testAdd = Action.async {
-    val event = Event(Option(5L), "Android Master", "Android workshops", EventCategory.Workshops, DateTime.now(), DateTime.now.plusDays(5))
-    eventDAO.insert(event).map { _ =>
-      Redirect(routes.HomeController.index)
-    }
-  }
 }

@@ -6,12 +6,13 @@ object EventCategory extends Enumeration {
   val LocalEvent = Value("Local Event")
   val Workshops = Value("Workshops")
 }
+import java.util.Date
+
 import EventCategory._
-import org.joda.time.DateTime
 
 case class Event(id: Option[Long],
                  name: String,
                  description: String,
                  category: EventCategory,
-                 startDateTime: DateTime,
-                 endDateTime: DateTime)
+                 startDateTime: Date,
+                 endDateTime: Date)

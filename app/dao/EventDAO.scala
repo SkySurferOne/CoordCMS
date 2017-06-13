@@ -1,5 +1,7 @@
 package dao
 
+import java.util.Date
+
 import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.Inject
 
@@ -65,14 +67,14 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
       b => b.toString,
       i => EventCategory.withName(i)
     )
-    implicit val dateColumnType = MappedColumnType.base[DateTime, Long](d => d.getMillisOfSecond, d => new DateTime(d))
+    implicit val dateColumnType = MappedColumnType.base[Date, Long](d => d.getTime, d => new Date(d))
 
     def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
     def name = column[String]("NAME")
     def description = column[String]("DESCRIPTION")
-    def category = column[EventCategory]("EVENT_CATEGORY")
-    def startDateTime = column[DateTime]("START_DATE_TIME")
-    def endDateTime = column[DateTime]("END_DATE_TIME")
+    def category = column[EventCategory.Value]("EVENT_CATEGORY")
+    def startDateTime = column[Date]("START_DATE_TIME")
+    def endDateTime = column[Date]("END_DATE_TIME")
 
     def * = (id.?, name, description, category, startDateTime, endDateTime) <> (Event.tupled, Event.unapply)
   }

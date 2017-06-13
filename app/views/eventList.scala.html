@@ -1,9 +1,11 @@
 @(events: Seq[Event])
 
 @listItem(event: Event) = {
-    <li class="event-item">
+    <li id="@event.id" class="event-item">
         <div>
             <h2>@event.name</h2>
+            <span class="start-datetime">@event.startDateTime</span> - <span class="start-datetime">@event.endDateTime</span>
+            <span class="category">@event.category</span>
             <p>@event.description</p>
         </div>
     </li>
