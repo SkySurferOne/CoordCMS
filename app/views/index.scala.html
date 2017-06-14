@@ -1,7 +1,9 @@
-@(events: Seq[Event])
+@(events: Seq[Event], eventForm: Form[Event])(implicit request: RequestHeader, messages: Messages)
 
-@main("CoordDMS") {
-  <h1>Welcome to Play!</h1>
-
-  @eventList(events)
+@main("CoordCMS") {
+    <div class="container">
+        <h1>Welcome to CoordCMS!</h1>
+        @createEventForm(eventForm)
+        @eventList(events)
+    </div>
 }

@@ -6,15 +6,14 @@ import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.Inject
 
 import models.Event
-import models.EventCategory.EventCategory
 import models.EventCategory
-import org.joda.time.DateTime
 import play.api.Logger
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 
-class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)
-                         (implicit executionContext: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
+class EventDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+                        (implicit executionContext: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
+
   import profile.api._
 
   private val events = TableQuery[EventTable]
@@ -34,14 +33,11 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
 
   // insert one event
   def insert(event: Event): Future[String] = {
-    Logger.debug("I'm inserting event")
-
     db.run(this.events += event)
       .map { _ => "Event is successfully added" }
       .recover {
         case ex: Exception => ex.getCause.getMessage
       }
-
   }
 
   // insert couple events in one batch
@@ -57,25 +53,31 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
 
   // return number of events
   def count(): Future[Int] = {
-    db.run (this.events.length.result)
+    db.run(this.events.length.result)
   }
 
   // EVENT table definition
   private class EventTable(tag: Tag) extends Table[Event](tag, "EVENT") {
-
+    // mappers
+    implicit val dateColumnType = MappedColumnType.base[Date, Long](d => d.getTime, d => new Date(d))
     implicit val eventCategoryMapper = MappedColumnType.base[EventCategory.Value, String](
       b => b.toString,
       i => EventCategory.withName(i)
     )
-    implicit val dateColumnType = MappedColumnType.base[Date, Long](d => d.getTime, d => new Date(d))
 
     def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
+
     def name = column[String]("NAME")
+
     def description = column[String]("DESCRIPTION")
+
     def category = column[EventCategory.Value]("EVENT_CATEGORY")
+
     def startDateTime = column[Date]("START_DATE_TIME")
+
     def endDateTime = column[Date]("END_DATE_TIME")
 
     def * = (id.?, name, description, category, startDateTime, endDateTime) <> (Event.tupled, Event.unapply)
   }
+
 }

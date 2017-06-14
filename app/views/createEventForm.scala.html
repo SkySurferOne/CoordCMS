@@ -1,0 +1,23 @@
+@(eventForm: Form[Event])(implicit request: RequestHeader, messages: Messages)
+
+@import helper._
+
+@form(CSRF(routes.HomeController.createEvent())) {
+    <fieldset>
+        @inputText(eventForm("name"), '_label -> "Name")
+        @inputText(eventForm("description"), '_label -> "Description")
+        @input(eventForm("startDateTime"), '_label -> "Start date and time") { (id, name, value, args) =>
+            <input type="datetime-local" name="@name" @toHtmlArgs(args)>
+        }
+        @input(eventForm("endDateTime"), '_label -> "End date and time") { (id, name, value, args) =>
+            <input type="datetime-local" name="@name" @toHtmlArgs(args)>
+        }
+        @select(
+            field = eventForm("category"),
+            options = EventCategory.options(),
+            '_default -> "Choose One",
+            '_label -> "Category"
+        )
+        <input type="submit">
+    </fieldset>
+}
