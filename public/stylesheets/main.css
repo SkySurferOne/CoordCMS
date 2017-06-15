@@ -7,7 +7,33 @@ html, body {
     box-sizing: border-box;
 }
 
-.container {
-    margin: 0 auto;
-    width: 1040px;
+.list-group-item {
+    padding: 0;
+}
+
+.list-group-item:hover {
+    background-color: #e6e6e6;
+}
+
+.navbar {
+    border-radius: 0;
+}
+
+.btn-new-event {
+    float: right;
+}
+
+.event-item a {
+    padding: 20px 25px;
+    color: inherit;
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+@media (max-width: 767px) {
+    .btn-new-event {
+        float: none;
+        margin-bottom: 20px;
+    }
 }

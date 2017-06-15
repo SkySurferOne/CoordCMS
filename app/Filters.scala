@@ -12,13 +12,15 @@ import play.filters.hosts.AllowedHostsFilter
  * https://www.playframework.com/documentation/latest/ScalaCsrf 
  * https://www.playframework.com/documentation/latest/AllowedHostsFilter
  * https://www.playframework.com/documentation/latest/SecurityHeaders
+ *
+ * http://semisafe.com/coding/2015/08/03/play_basics_csrf_protection.html
  */
 class Filters @Inject() (
-  csrfFilter: CSRFFilter,
+  //csrfFilter: CSRFFilter,
   allowedHostsFilter: AllowedHostsFilter,
   securityHeadersFilter: SecurityHeadersFilter
 ) extends DefaultHttpFilters(
-  csrfFilter, 
+  //csrfFilter,
   allowedHostsFilter, 
   securityHeadersFilter
 )

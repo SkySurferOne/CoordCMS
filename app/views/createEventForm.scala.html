@@ -1,23 +1,29 @@
-@(eventForm: Form[Event])(implicit request: RequestHeader, messages: Messages)
+@(eventForm: Form[Event])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 
 @import helper._
 
-@form(CSRF(routes.HomeController.createEvent())) {
-    <fieldset>
-        @inputText(eventForm("name"), '_label -> "Name")
-        @inputText(eventForm("description"), '_label -> "Description")
-        @input(eventForm("startDateTime"), '_label -> "Start date and time") { (id, name, value, args) =>
-            <input type="datetime-local" name="@name" @toHtmlArgs(args)>
-        }
-        @input(eventForm("endDateTime"), '_label -> "End date and time") { (id, name, value, args) =>
-            <input type="datetime-local" name="@name" @toHtmlArgs(args)>
-        }
-        @select(
-            field = eventForm("category"),
-            options = EventCategory.options(),
-            '_default -> "Choose One",
-            '_label -> "Category"
-        )
-        <input type="submit">
-    </fieldset>
+@main("CoordCMS") {
+    @*Temporarily we don't care about security*@
+    @*CSRF(routes.HomeController.createEvent())*@
+    @form(routes.HomeController.createEvent(), 'class -> "panel panel-default") {
+        <div class="panel-heading"><h2>Create new sweet event</h2></div>
+        <fieldset class="panel-body">
+            @inputText(eventForm("name"), '_label -> "Name", 'class -> "form-control")
+            @textarea(eventForm("description"), '_label -> "Description", 'class -> "form-control", 'rows -> 3, 'cols -> 50)
+            @input(eventForm("startDateTime"), '_label -> "Start date and time", 'class -> "form-control") { (id, name, value, args) =>
+                <input type="datetime-local" name="@name" @toHtmlArgs(args)>
+            }
+            @input(eventForm("endDateTime"), '_label -> "End date and time", 'class -> "form-control") { (id, name, value, args) =>
+                <input type="datetime-local" name="@name" @toHtmlArgs(args)>
+            }
+            @select(
+                field = eventForm("category"),
+                options = EventCategory.options(),
+                '_default -> "Choose One",
+                '_label -> "Category",
+                'class -> "form-control"
+            )
+            <input class="btn btn-default" type="submit">
+        </fieldset>
+    }
 }

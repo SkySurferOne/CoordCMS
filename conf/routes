@@ -3,10 +3,17 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-# An example controller showing a sample home page
+# APPLICATION ROUTES
+
+# redirect to /events
 GET     /                           controllers.HomeController.index
 
-# add event
+# show list of events
+GET     /events                     controllers.HomeController.listEvents
+
+# show form
+GET     /events/new                 controllers.HomeController.showEventForm
+# create new event
 POST    /events                     controllers.HomeController.createEvent
 
 # get or delete event with id
@@ -15,3 +22,11 @@ POST    /events/delete/:id          controllers.HomeController.deleteEventById(i
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /webjars/*file              controllers.WebJarAssets.at(file)
+
+# API ROUTES
+
+GET     /api/events                 api.EventApiController.index
+# create event (only for demonstation)
+POST    /api/events                 api.EventApiController.createEvent
+

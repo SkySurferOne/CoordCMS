@@ -1,9 +1,17 @@
-@(events: Seq[Event], eventForm: Form[Event])(implicit request: RequestHeader, messages: Messages)
+@(events: Seq[Event])(implicit webJarAssets: WebJarAssets)
 
 @main("CoordCMS") {
-    <div class="container">
+    <header class="header jumbotron">
         <h1>Welcome to CoordCMS!</h1>
-        @createEventForm(eventForm)
-        @eventList(events)
+    </header>
+
+    <div class="row">
+        <div class="col-sm-2 col-sm-push-10 col-xs-12">
+            <a class="btn btn-default btn-new-event" href="@controllers.routes.HomeController.showEventForm()">New event</a>
+        </div>
+        <div class="col-sm-10 col-sm-pull-2 col-xs-12">
+            @eventList(events)
+        </div>
+
     </div>
 }

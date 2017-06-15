@@ -1,17 +1,17 @@
 @(events: Seq[Event])
 
 @listItem(event: Event) = {
-    <li id="@event.id" class="event-item">
-        <div>
-            <h2>@event.name</h2>
+    <li id="@event.id" class="event-item list-group-item">
+        <a href="#">
+            <h3 class="list-group-item-heading">@event.name</h3>
             <span class="start-datetime">@event.startDateTime</span> - <span class="end-datetime">@event.endDateTime</span>
             <span class="category">@event.category</span>
-            <p>@event.description</p>
-        </div>
+            <p class="list-group-item-text">@event.description</p>
+        </a>
     </li>
 }
 
-<ul class="events-list">
+<ul class="events-list list-group">
     @for(event <- events) {
         @listItem(event)
     }

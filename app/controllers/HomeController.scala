@@ -13,12 +13,16 @@ import scala.concurrent.{ExecutionContext}
 import play.api.i18n._
 
 @Singleton
-class HomeController @Inject()(eventDAO: EventDAO, val messagesApi: MessagesApi)
+class HomeController @Inject()(eventDAO: EventDAO, val messagesApi: MessagesApi, implicit val webJarAssets: WebJarAssets)
                               (implicit executionContext: ExecutionContext) extends Controller with I18nSupport {
 
-  def index = Action.async {
+  def index = Action {
+    Redirect(routes.HomeController.listEvents)
+  }
+
+  def listEvents = Action.async {
     implicit request =>
-      eventDAO.all().map(events => Ok(views.html.index(events, eventForm)))
+      eventDAO.all().map(events => Ok(views.html.index(events)))
   }
 
   implicit def eventCategoryFormat: Formatter[EventCategory.EventCategory] =
@@ -54,7 +58,7 @@ class HomeController @Inject()(eventDAO: EventDAO, val messagesApi: MessagesApi)
         formWithErrors => {
           Logger.debug("eerror kurna!")
           Logger.debug(formWithErrors.toString)
-          eventDAO.all().map(events => BadRequest(views.html.index(events, formWithErrors)))
+          eventDAO.all().map(events => BadRequest(views.html.createEventForm(formWithErrors)))
         },
         eventData => {
           val event = Event(Option.empty, eventData.name, eventData.description, eventData.category, eventData.startDateTime, eventData.endDateTime)
@@ -79,4 +83,10 @@ class HomeController @Inject()(eventDAO: EventDAO, val messagesApi: MessagesApi)
         _ => Redirect(routes.HomeController.index())
       }
   }
+
+  def showEventForm = Action {
+    implicit request =>
+      Ok(views.html.createEventForm(eventForm))
+  }
+
 }
