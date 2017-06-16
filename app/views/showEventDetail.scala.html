@@ -1,0 +1,19 @@
+@(event: Event)(implicit request: RequestHeader, messages: Messages)
+
+@import helper._
+
+@main("CoordCMS") {
+  <div class="container">
+    <h1>Welcome to CoordCMS!</h1>
+      <div class="event-item">
+        <h2>@event.name</h2>
+        <span class="start-datetime">@event.startDateTime</span> - <span class="end-datetime">@event.endDateTime</span>
+        <span class="category">@event.category</span>
+        <p>@event.description</p>
+      </div>
+
+    @form(CSRF(routes.HomeController.deleteEventById(event.id.get))) {
+      <input value="Delete event" type="submit">
+    }
+    </div>
+}

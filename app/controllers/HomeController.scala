@@ -65,4 +65,18 @@ class HomeController @Inject()(eventDAO: EventDAO, val messagesApi: MessagesApi)
       )
   }
 
+  def getEventById(id: Long) = Action.async {
+    implicit request =>
+      eventDAO.findById(id).map {
+        case Some(event) => Ok(views.html.showEventDetail(event))
+        case None => NotFound(views.html.notFound("404 - Event not found"))
+      }
+  }
+
+  def deleteEventById(id:Long) = Action.async {
+    implicit request =>
+      eventDAO.delete(id).map{
+        _ => Redirect(routes.HomeController.index())
+      }
+  }
 }
