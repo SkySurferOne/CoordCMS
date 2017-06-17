@@ -9,7 +9,7 @@ import play.api.data.{Form, FormError, Forms}
 import play.api.data.Forms.{date, longNumber, mapping, nonEmptyText, optional, text}
 import play.api.data.format.Formatter
 import play.api.Logger
-import scala.concurrent.{ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 import play.api.i18n._
 
 @Singleton
@@ -77,9 +77,9 @@ class HomeController @Inject()(eventDAO: EventDAO, val messagesApi: MessagesApi,
       }
   }
 
-  def deleteEventById(id:Long) = Action.async {
+  def deleteEventById(id: Long) = Action.async {
     implicit request =>
-      eventDAO.delete(id).map{
+      eventDAO.delete(id).map {
         _ => Redirect(routes.HomeController.index())
       }
   }

@@ -2,7 +2,7 @@
 
 @listItem(event: Event) = {
     <li id="@event.id" class="event-item list-group-item">
-        <a href="#">
+        <a href="@routes.HomeController.getEventById(event.id.get)">
             <h3 class="list-group-item-heading">@event.name</h3>
             <span class="start-datetime">@event.startDateTime</span> - <span class="end-datetime">@event.endDateTime</span>
             <span class="category">@event.category</span>
