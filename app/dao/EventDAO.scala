@@ -32,18 +32,12 @@ class EventDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     db.run(events.result)
 
   // insert one event
-  def insert(event: Event): Future[String] = {
-    db.run(this.events += event)
-      .map { _ => "Event is successfully added" }
-      .recover {
-        case ex: Exception => ex.getCause.getMessage
-      }
+  def insert(event: Event): Future[Long] = {
+    db.run(this.events returning events.map(_.id) += event)
   }
 
   // insert couple events in one batch
   def insert(events: Seq[Event]): Future[String] = {
-    Logger.debug("I'm inserting events")
-
     db.run(this.events ++= events)
       .map { _ => "Events are successfully added" }
       .recover {
@@ -57,6 +51,7 @@ class EventDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
   }
 
   // EVENT table definition
+  // TODO add creationDate and filter events by it
   private class EventTable(tag: Tag) extends Table[Event](tag, "EVENT") {
     // mappers
     implicit val dateColumnType = MappedColumnType.base[Date, Long](d => d.getTime, d => new Date(d))

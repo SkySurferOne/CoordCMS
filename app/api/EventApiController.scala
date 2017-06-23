@@ -54,7 +54,7 @@ class EventApiController @Inject()(eventDAO: EventDAO)(implicit ec: ExecutionCon
       },
       event => {
         eventDAO.insert(event) map {
-          e =>  Ok(Json.obj("status" -> "OK", "message" -> ("Event '" + e.name + "' saved.")))
+          e =>  Ok(Json.obj("status" -> "OK", "message" -> ("Event '" + event.name + "' saved with id "+ e +".")))
         } recover {
           case e => BadRequest(Json.obj("message" -> e.getMessage))
         }

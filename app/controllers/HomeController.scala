@@ -12,6 +12,7 @@ import play.api.Logger
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.i18n._
 
+
 @Singleton
 class HomeController @Inject()(eventDAO: EventDAO, val messagesApi: MessagesApi, implicit val webJarAssets: WebJarAssets)
                               (implicit executionContext: ExecutionContext) extends Controller with I18nSupport {
@@ -51,7 +52,7 @@ class HomeController @Inject()(eventDAO: EventDAO, val messagesApi: MessagesApi,
     )(Event.apply)(Event.unapply)
   )
 
-  // TODO make separate page for this
+  // TODO move to separate controller (EventFormCtrl)
   def createEvent = Action.async {
     implicit request =>
       eventForm.bindFromRequest.fold(
@@ -77,6 +78,7 @@ class HomeController @Inject()(eventDAO: EventDAO, val messagesApi: MessagesApi,
       }
   }
 
+  // TODO move to different controller (EventViewCtrl)
   def deleteEventById(id: Long) = Action.async {
     implicit request =>
       eventDAO.delete(id).map {
