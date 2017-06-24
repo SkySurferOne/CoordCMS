@@ -4,32 +4,17 @@ import java.util.Date
 
 import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.Inject
-
 import models.Event
 import models.EventCategory
-import play.api.Logger
-import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import slick.jdbc.JdbcProfile
+import play.api.db.slick.{DatabaseConfigProvider}
+
 
 class EventDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
-                        (implicit executionContext: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
+                        (implicit executionContext: ExecutionContext) extends BaseDAO[Event] {
 
   import profile.api._
 
   private val events = TableQuery[EventTable]
-
-  // find event by id
-  def findById(id: Long): Future[Option[Event]] =
-    db.run(events.filter(_.id === id).result.headOption)
-
-  // delete event
-  def delete(id: Long): Future[Int] = {
-    db.run(events.filter(_.id === id).delete)
-  }
-
-  // get all events
-  def all(): Future[Seq[Event]] =
-    db.run(events.result)
 
   // insert one event
   def insert(event: Event): Future[Long] = {
@@ -43,6 +28,23 @@ class EventDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
       .recover {
         case ex: Exception => ex.getCause.getMessage
       }
+  }
+
+  // find event by id
+  def findById(id: Long): Future[Option[Event]] =
+    db.run(events.filter(_.id === id).result.headOption)
+
+  // get all events
+  def all(): Future[Seq[Event]] =
+    db.run(events.result)
+
+  // update event
+  def update(id: Long): Unit = ???
+
+  // delete event
+  // TODO delete all connected data
+  def delete(id: Long): Future[Int] = {
+    db.run(events.filter(_.id === id).delete)
   }
 
   // return number of events
@@ -61,18 +63,14 @@ class EventDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     )
 
     def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-
     def name = column[String]("NAME")
-
     def description = column[String]("DESCRIPTION")
-
     def category = column[EventCategory.Value]("EVENT_CATEGORY")
-
     def startDateTime = column[Date]("START_DATE_TIME")
-
     def endDateTime = column[Date]("END_DATE_TIME")
 
     def * = (id.?, name, description, category, startDateTime, endDateTime) <> (Event.tupled, Event.unapply)
   }
+
 
 }

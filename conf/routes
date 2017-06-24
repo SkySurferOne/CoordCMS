@@ -14,11 +14,11 @@ GET     /events                     controllers.HomeController.listEvents
 # show form
 GET     /events/new                 controllers.HomeController.showEventForm
 # create new event
-POST    /events                     controllers.HomeController.createEvent
+POST    /events                     controllers.EventFormController.createEvent
 
 # get or delete event with id
 GET     /events/:id                 controllers.HomeController.getEventById(id:Long)
-POST    /events/delete/:id          controllers.HomeController.deleteEventById(id:Long)
+POST    /events/delete/:id          controllers.EventSingleViewController.deleteEventById(id:Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

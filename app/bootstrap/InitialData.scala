@@ -7,7 +7,7 @@ import play.api.Logger
 import dao.{EventDAO, FieldDAO, PageDAO, SectionDAO}
 import models._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 private[bootstrap] class InitialData @Inject()(eventDAO: EventDAO,
                                                pageDAO: PageDAO,
@@ -16,27 +16,21 @@ private[bootstrap] class InitialData @Inject()(eventDAO: EventDAO,
                                               (implicit executionContext: ExecutionContext) {
 
   def insert(): Unit = {
-    eventDAO.count().onSuccess {
-      case count if count <= 0 => eventDAO.insert(InitialData.events)
-    }
 
-    pageDAO.count().onSuccess {
-      case count if count <= 0 => pageDAO.insert(InitialData.pages).map {
-        _ => pageDAO.all().map( coll => Logger.debug(coll.toString))
-      }
-    }
+    // to add more insertion modify for below
+    val added = for {
+      c <- eventDAO.count()
+      if c <= 0
+      _ <- eventDAO.insert(InitialData.events)
+      _ <- pageDAO.insert(InitialData.pages)
+      _ <- sectionDAO.insert(InitialData.sections)
+    } yield fieldDAO.insert(InitialData.fields)
 
-    sectionDAO.count().onSuccess {
-      case count if count <= 0 => sectionDAO.insert(InitialData.sections).map {
-        _ => sectionDAO.all().map( coll => Logger.debug(coll.toString))
-      }
-    }
-
-    // TODO make chain from this
-    fieldDAO.count().onSuccess {
-      case count if count <= 0 => fieldDAO.insert(InitialData.fields).map {
-        _ => fieldDAO.all().map( coll => Logger.debug(coll.toString))
-      }
+    added.onSuccess {
+      case _ => Future.sequence(Seq(pageDAO.all(), sectionDAO.all(), fieldDAO.all()))
+        .map {
+          res => Logger.info(res.map(_.toString).toString())
+        }
     }
 
   }

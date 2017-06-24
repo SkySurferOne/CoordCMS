@@ -1,11 +1,15 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.Controller
+import dao.EventDAO
+import models.Event
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, Controller}
 import scala.concurrent.ExecutionContext
 
 
 @Singleton
-class EventPagesController @Inject()()(implicit executionContext: ExecutionContext) extends Controller {
+class EventPagesController @Inject()(val eventDAO: EventDAO, val messagesApi: MessagesApi, implicit val webJarAssets: WebJarAssets)
+                                    (implicit executionContext: ExecutionContext) extends Controller with I18nSupport {
 
 }

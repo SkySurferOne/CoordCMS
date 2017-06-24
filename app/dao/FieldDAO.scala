@@ -1,12 +1,10 @@
 package dao
 
 import javax.inject.Inject
-
 import models._
-import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import slick.jdbc.JdbcProfile
-
+import play.api.db.slick.{DatabaseConfigProvider}
 import scala.concurrent.{ExecutionContext, Future}
+
 
 class FieldDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
                         (implicit executionContext: ExecutionContext) extends BaseDAO[Field] {
@@ -28,28 +26,17 @@ class FieldDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
 
   def insert(entities: Seq[Field]): Future[Seq[Long]] = {
     Future.sequence(entities.map(field => insert(field)))
-
-//    entities match {
-//      case imgs: Seq[Image] => db.run(images ++= imgs)
-//        .map { _ => "Collection successfully added" }
-//        .recover {
-//          case ex: Exception => ex.getCause.getMessage
-//        }
-//      case para: Seq[Paragraph] => db.run(paragraphs ++= para)
-//        .map { _ => "Collection successfully added" }
-//        .recover {
-//          case ex: Exception => ex.getCause.getMessage
-//        }
-//      case head: Seq[Heading] => db.run(headings ++= head)
-//        .map { _ => "Collection successfully added" }
-//        .recover {
-//          case ex: Exception => ex.getCause.getMessage
-//        }
-//      case _ => throw new Exception("No such type")
-//    }
   }
 
   def findBySectionId(sectionId: Long) = ???
+
+  // only for test purpose
+  def all(): Future[Seq[Field]] =
+    for {
+      i <- db.run(images.result)
+      p <- db.run(paragraphs.result)
+      h <- db.run(headings.result)
+    } yield i ++ p ++ h
 
   def update(id: Long) = ???
 
@@ -61,19 +48,9 @@ class FieldDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     h <- db.run(headings.length.result)
   } yield i + p + h
 
-  // only for test purpose
-  def all(): Future[Seq[Field]] =
-    for {
-      i <- db.run(images.result)
-      p <- db.run(paragraphs.result)
-      h <- db.run(headings.result)
-    } yield i ++ p ++ h
-
   private abstract class FieldTable[T](tag: Tag, tableName: String) extends Table[T](tag, tableName) {
     def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-
     def sectionId = column[Long]("SECTION_ID")
-
     def ordinal = column[Int]("ORDINAL")
   }
 
@@ -91,7 +68,6 @@ class FieldDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
 
   private class ImageTable(tag: Tag) extends FieldTable[Image](tag, "IMAGE") {
     def url = column[String]("URL")
-
     def description = column[String]("DESCRIPTION")
 
     def * = (id.?, sectionId, ordinal, url, description) <> (Image.tupled, Image.unapply)

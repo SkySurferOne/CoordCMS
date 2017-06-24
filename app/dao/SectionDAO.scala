@@ -1,10 +1,8 @@
 package dao
 
 import javax.inject.Inject
-
-import models.{Page, Section}
+import models.{Section}
 import play.api.db.slick.DatabaseConfigProvider
-
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -26,7 +24,11 @@ class SectionDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvide
       }
   }
 
-  def findByPageId(pageId: Long) = None
+  def findByPageId(pageId: Long) = ???
+
+  // only for test purpose
+  def all(): Future[Seq[Section]] =
+    db.run(sections.result)
 
   def update(id: Long) = ???
 
@@ -35,10 +37,6 @@ class SectionDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvide
 
   def count(): Future[Int] =
     db.run(sections.length.result)
-
-  // only for test purpose
-  def all(): Future[Seq[Section]] =
-    db.run(sections.result)
 
   private class SectionTable(tag: Tag) extends Table[Section](tag, "SECTION") {
     def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)

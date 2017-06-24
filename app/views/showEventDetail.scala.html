@@ -10,7 +10,7 @@
       <p>@event.description</p>
     </div>
 
-    @form(routes.HomeController.deleteEventById(event.id.get)) {
+    @form(routes.EventSingleViewController.deleteEventById(event.id.get)) {
       <input class="btn btn-danger" value="Delete event" type="submit">
     }
 }

@@ -19,7 +19,7 @@ abstract class BaseDAO[T <: Entity] extends HasDatabaseConfigProvider[JdbcProfil
   def update(id: Long)
 
   // Delete
-  def delete(id: Long)
+  def delete(id: Long): Future[Any]
 
   // Utils
   def count(): Future[Int]
