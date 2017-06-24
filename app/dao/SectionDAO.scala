@@ -24,7 +24,10 @@ class SectionDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvide
       }
   }
 
-  def findByPageId(pageId: Long) = ???
+  def findByPageId(pageId: Long): Future[Seq[Section]] = {
+    val q = sections.filter(_.pageId === pageId).result
+    db.run(q)
+  }
 
   // only for test purpose
   def all(): Future[Seq[Section]] =
@@ -33,7 +36,10 @@ class SectionDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvide
   def update(id: Long) = ???
 
   // It must delete all fields before
-  def delete(id: Long) = ???
+  def delete(id: Long): Future[Int] = {
+    val q = sections.filter(_.id === id).delete
+    db.run(q)
+  }
 
   def count(): Future[Int] =
     db.run(sections.length.result)

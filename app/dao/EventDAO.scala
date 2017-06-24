@@ -42,7 +42,7 @@ class EventDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
   def update(id: Long): Unit = ???
 
   // delete event
-  // TODO delete all connected data
+  // TODO make alert with the question whether to delete event
   def delete(id: Long): Future[Int] = {
     db.run(events.filter(_.id === id).delete)
   }

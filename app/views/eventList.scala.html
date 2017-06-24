@@ -12,7 +12,7 @@
 }
 
 <ul class="events-list list-group">
-    @for(event <- events) {
+    @for(event <- events.sortBy(_.name)) {
         @listItem(event)
     }
 </ul>

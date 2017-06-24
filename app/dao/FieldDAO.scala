@@ -28,7 +28,21 @@ class FieldDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     Future.sequence(entities.map(field => insert(field)))
   }
 
-  def findBySectionId(sectionId: Long) = ???
+  def findBySectionId(sectionId: Long): Future[Seq[Field]] = {
+    val q = images.filter(_.sectionId === sectionId).result
+    val q1 = paragraphs.filter(_.sectionId === sectionId).result
+    val q2 = headings.filter(_.sectionId === sectionId).result
+
+    // in parallel
+    Future.sequence(Seq(db.run(q), db.run(q1), db.run(q2))).map(_.flatten)
+
+    // concurrently
+    //    for {
+    //      i <- db.run(q)
+    //      p <- db.run(q1)
+    //      h <- db.run(q2)
+    //    } yield i ++ p ++ h
+  }
 
   // only for test purpose
   def all(): Future[Seq[Field]] =

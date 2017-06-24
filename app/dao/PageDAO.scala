@@ -1,8 +1,10 @@
 package dao
 
 import javax.inject.Inject
-import models.{Page}
-import play.api.db.slick.{DatabaseConfigProvider}
+
+import models.{Event, Page}
+import play.api.db.slick.DatabaseConfigProvider
+
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -25,13 +27,23 @@ class PageDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider, val pageDA
       }
   }
 
-  def findByEventId(eventId: Long) = ???
-  def findByEventIdAndOrdering(eventId: Long, ordering: Int) = ???
+  def findByEventId(eventId: Long): Future[Seq[Page]] = {
+    val q = pages.filter(_.eventId === eventId).result
+    db.run(q)
+  }
+
+  def findByEventIdAndOrdering(eventId: Long, ordering: Int): Future[Option[Page]] = {
+    val q = pages.filter(e => e.eventId === eventId && e.ordinal === ordering).result.headOption
+    db.run(q)
+  }
 
   def update(id: Long) = ???
 
   // It must delete all sections before
-  def delete(id: Long) = ???
+  def delete(id: Long): Future[Int] = {
+    val q = pages.filter(_.id === id).delete
+    db.run(q)
+  }
 
   def count(): Future[Int] =
     db.run(pages.length.result)
