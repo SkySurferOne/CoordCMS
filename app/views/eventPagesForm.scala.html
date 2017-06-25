@@ -1,7 +1,56 @@
-@()(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@import controllers.EventPagesController.PagesDTO
+@import play.api.data.Field
+@(eventId: Long, eventName: String, pages: Form[PagesDTO])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 
 @import helper._
 
+@sectionItem(section: Field) = {
+    <div class="section" data-ordinal="@section("ordinal")">
+        @inputText(section("title"), '_label -> "Title", 'class -> "form-control")
+        @repeat(section("fields"), min = 1) { field =>
+            @fieldItem(field)
+        }
+    </div>
+}
+
+@fieldItem(field: Field) = {
+    <div class="field" data-ordinal="@field("ordinal")">
+        @field("fieldType").toString match {
+            case "Heading" => {
+                <div class="field field-heading" data-ordinal="@field("ordinal")">
+                @inputText(field("content"), '_label -> "Title", 'class -> "form-control")
+                </div>
+            }
+            case "Paragraph" => {
+                <div class="field field-paragraph" data-ordinal="@field("ordinal")">
+                @inputText(field("content"), '_label -> "Title", 'class -> "form-control")
+                </div>
+            }
+            case "Image" => {
+                <div class="field field-image" data-ordinal="@field("ordinal")">
+                    @inputText(field("url"), '_label -> "Title", 'class -> "form-control")
+                    @inputText(field("description"), '_label -> "Title", 'class -> "form-control")
+                </div>
+            }
+            case _ => {
+            }
+        }
+    </div>
+}
+
 @main("CoordCMS") {
-    <h2>Event Pages</h2>
+    <h2>@eventName Pages</h2>
+    @form(routes.EventPagesController.createEventPages(eventId), 'class -> "panel panel-default") {
+        <!-- TODO sort by ordinal -->
+        <fieldset class="panel-body">
+        @repeat(pages("pages"), min = 1) { page =>
+                <div class="page" data-ordinal="@page("ordinal")">
+                    @inputText(page("title"), '_label -> "Title", 'class -> "form-control")
+                    @repeat(page("sections"), min = 1) { section =>
+                        @sectionItem(section)
+                    }
+                </div>
+        }
+        </fieldset>
+    }
 }

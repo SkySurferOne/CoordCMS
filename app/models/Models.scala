@@ -1,15 +1,24 @@
 package models
 
-object EventCategory extends Enumeration {
+abstract class BasicEnum extends Enumeration {
+  def options(): Seq[(String, String)] = {
+    (for (v <- this.values.toSeq)
+      yield (v.toString, v.toString)) (collection.breakOut)
+  }
+}
+
+object EventCategory extends BasicEnum {
   type EventCategory = Value
   val InternationalEvent = Value("International Event")
   val LocalEvent = Value("Local Event")
   val Workshops = Value("Workshops")
+}
 
-  def options(): Seq[(String, String)] = {
-    (for (v <- EventCategory.values.toSeq)
-      yield (v.toString, v.toString)) (collection.breakOut)
-  }
+object FieldType extends BasicEnum {
+  type FieldType = Value
+  val Heading = Value("Heading")
+  val Paragraph = Value("Paragraph")
+  val Image = Value("Image")
 }
 
 import java.util.Date
