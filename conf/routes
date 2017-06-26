@@ -36,3 +36,9 @@ GET     /api/events                 api.EventApiController.index
 # create event (only for demonstation)
 POST    /api/events                 api.EventApiController.createEvent
 
+# get pages
+GET     /api/events/:id/pages       api.PagesApiController.getPagesByEventId(id: Long)
+
+# get sections
+GET /api/pages/:id/sections         api.SectionApiController.getSectionsByPageId(id: Long)
+
