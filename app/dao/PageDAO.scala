@@ -37,7 +37,7 @@ class PageDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider, val pageDA
     db.run(q)
   }
 
-  def update(id: Long) = ???
+  def update(updatedPage: Page) = ???
 
   // It must delete all sections before
   def delete(id: Long): Future[Int] = {

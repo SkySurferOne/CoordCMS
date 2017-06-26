@@ -33,7 +33,7 @@ class SectionDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvide
   def all(): Future[Seq[Section]] =
     db.run(sections.result)
 
-  def update(id: Long) = ???
+  def update(updatedSection: Section) = ???
 
   // It must delete all fields before
   def delete(id: Long): Future[Int] = {

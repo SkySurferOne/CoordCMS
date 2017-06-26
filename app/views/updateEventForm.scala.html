@@ -5,9 +5,10 @@
 @main("CoordCMS") {
     @*Temporarily we don't care about security*@
     @*CSRF(routes.HomeController.createEvent())*@
-    @form(routes.EventFormController.createEvent(), 'class -> "panel panel-default") {
+    @form(routes.EventFormController.updateEvent(), 'class -> "panel panel-default") {
         <div class="panel-heading"><h2>Create new sweet event</h2></div>
         <fieldset class="panel-body">
+            @inputText(eventForm("id"), '_label -> "Id", 'class -> "form-control", 'readonly -> "readonly")
             @inputText(eventForm("name"), '_label -> "Name", 'class -> "form-control")
             @textarea(eventForm("description"), '_label -> "Description", 'class -> "form-control", 'rows -> 3, 'cols -> 50)
             @input(eventForm("startDateTime"), '_label -> "Start date and time", 'class -> "form-control") { (id, name, value, args) =>

@@ -52,7 +52,7 @@ class FieldDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
       h <- db.run(headings.result)
     } yield i ++ p ++ h
 
-  def update(id: Long) = ???
+  def update(updatedField: Field) = ???
 
   def delete(id: Long) = ???
 

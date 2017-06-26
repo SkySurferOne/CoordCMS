@@ -30,9 +30,15 @@ class HomeController @Inject()(val eventDAO: EventDAO, val messagesApi: Messages
       }
   }
 
-  def showEventForm = Action {
-    implicit request =>
-      Ok(views.html.createEventForm(eventForm))
+  def showNewEventForm() = Action {
+    implicit request => Ok(views.html.createEventForm(eventForm))
   }
 
+  def showUpdateEventForm(id: Long) = Action.async {
+    implicit request =>
+      eventDAO.findById(id).map {
+        case Some(event) => Ok(views.html.updateEventForm(eventForm.fill(event)))
+        case None => NotFound(views.html.notFound("404 - Event not found"))
+      }
+  }
 }

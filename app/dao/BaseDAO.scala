@@ -16,7 +16,7 @@ abstract class BaseDAO[T <: Entity] extends HasDatabaseConfigProvider[JdbcProfil
   def insert(entities: Seq[T]): Future[Any]
 
   // Update
-  def update(id: Long)
+  def update(entity: T): Future[Any]
 
   // Delete
   def delete(id: Long): Future[Any]

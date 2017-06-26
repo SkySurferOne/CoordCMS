@@ -10,7 +10,16 @@
       <p>@event.description</p>
     </div>
 
-    @form(routes.EventSingleViewController.deleteEventById(event.id.get)) {
-      <input class="btn btn-danger" value="Delete event" type="submit">
-    }
+    <div class="row">
+        <div class="col-xs-2">
+            <a href="@routes.HomeController.showUpdateEventForm(event.id.get)">
+                <input class="btn btn-warning" value="Update event" type="submit">
+            </a>
+        </div>
+        <div class="col-xs-2">
+            @form(routes.EventSingleViewController.deleteEventById(event.id.get)) {
+                <input class="btn btn-danger" value="Delete event" type="submit">
+            }
+        </div>
+    </div>
 }

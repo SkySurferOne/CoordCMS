@@ -32,6 +32,23 @@ class EventFormController @Inject()(val eventDAO: EventDAO, val messagesApi: Mes
       )
   }
 
+  def updateEvent() = Action.async {
+    implicit request =>
+      eventForm.bindFromRequest.fold(
+        formWithErrors => {
+          eventDAO.findById(formWithErrors.data("id").toLong).map {
+            case Some(event) => BadRequest(views.html.updateEventForm(eventForm.fill(event)))
+            case None => NotFound(views.html.notFound("404 - Event not found"))
+          }
+        },
+        eventData => {
+          val event = Event(eventData.id, eventData.name, eventData.description, eventData.category, eventData.startDateTime, eventData.endDateTime)
+          eventDAO.update(event).map { _ =>
+            Redirect(routes.HomeController.index())
+          }
+        }
+      )
+  }
 }
 
 object EventFormController {
