@@ -1,56 +1,124 @@
 @import controllers.EventPagesController.PagesDTO
 @import play.api.data.Field
-@(eventId: Long, eventName: String, pages: Form[PagesDTO])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(
+eventId: Long,
+eventName: String,
+pages: Form[PagesDTO],
+scripts: List[String] = List[String]("javascripts/eventPagesForm.js")
+)(
+implicit request: RequestHeader,
+messages: Messages,
+webJarAssets: WebJarAssets
+)
 
 @import helper._
 
 @sectionItem(section: Field) = {
-    <div class="section" data-ordinal="@section("ordinal")">
-        @inputText(section("title"), '_label -> "Title", 'class -> "form-control")
-        @repeat(section("fields"), min = 1) { field =>
-            @fieldItem(field)
-        }
+    <div class="panel panel-primary section">
+        <div class="panel-heading">
+            <span class="header">Section @section("ordinal").value.getOrElse("")</span>
+            <a class="btn-panel btn-panel-section btn-panel-section-remove pull-right">
+                <span class="glyphicon glyphicon-remove-circle"></span>
+            </a>
+            <a class="btn-panel btn-panel-section btn-panel-section-up pull-right">
+                <span class="glyphicon glyphicon-menu-up"></span>
+                <span class="glyphicon glyphicon-menu-down hidden"></span>
+            </a>
+        </div>
+        <div class="panel-body">
+            @inputText(section("title"), '_label -> "Section Title", 'class -> "form-control", 'placeholder -> "Section title")
+            <span class="hidden">@inputText(section("ordinal"), 'class -> "form-control hidden")</span>
+
+            <div class="clearfix fields">
+                @repeat(section("fields"), min = 0) { field =>
+                    @fieldItem(field)
+                }
+            </div>
+
+            <div class="btn-group pull-right">
+                <button aria-expanded="false" aria-haspopup="true" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                    Add field
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="add-field add-heading-btn" data-type="Heading" href="#">Heading</a>
+                        <a class="add-field add-paragraph-btn" data-type="Paragraph" href="#">Paragraph</a>
+                        <a class="add-field add-image-btn" data-type="Image" href="#">Image</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 }
 
 @fieldItem(field: Field) = {
-    <div class="field" data-ordinal="@field("ordinal")">
-        @field("fieldType").toString match {
-            case "Heading" => {
-                <div class="field field-heading" data-ordinal="@field("ordinal")">
-                @inputText(field("content"), '_label -> "Title", 'class -> "form-control")
-                </div>
+    <div class="field page-form panel panel-success">
+        <div class="panel-heading clearfix">
+            <span class="header">@field("fieldType").value.getOrElse("Field Type Error")</span>
+            <a class="btn-panel btn-panel-field btn-panel-field-remove pull-right">
+                <span class="glyphicon glyphicon-remove-circle"></span>
+            </a>
+            <a class="btn-panel btn-panel-field btn-panel-field-up pull-right">
+                <span class="glyphicon glyphicon-menu-up"></span>
+                <span class="glyphicon glyphicon-menu-down hidden"></span>
+            </a>
+        </div>
+        <div class="panel-body">
+            @if(!field("fieldType").value.getOrElse("").equals("Image")) {
+            <div class="field-header field-paragraph">
+            } else {
+            <div class="field-header field-paragraph hidden">
             }
-            case "Paragraph" => {
-                <div class="field field-paragraph" data-ordinal="@field("ordinal")">
-                @inputText(field("content"), '_label -> "Title", 'class -> "form-control")
-                </div>
+                @inputText(field("content"), '_label -> "Field Content", 'class -> "form-control", 'placeholder -> "Content")
+            </div>
+
+            @if(field("fieldType").value.getOrElse("").equals("Image")) {
+            <div class="field field-image">
+            } else {
+            <div class="field field-image hidden">
             }
-            case "Image" => {
-                <div class="field field-image" data-ordinal="@field("ordinal")">
-                    @inputText(field("url"), '_label -> "Title", 'class -> "form-control")
-                    @inputText(field("description"), '_label -> "Title", 'class -> "form-control")
-                </div>
-            }
-            case _ => {
-            }
-        }
+                @inputText(field("url"), '_label -> "Url", 'placeholder -> "Image Url", 'class -> "form-control")
+                @inputText(field("description"), '_label -> "Image Description", 'placeholder -> "Image Description", 'class -> "form-control")
+            </div>
+
+            <span class="hidden">
+                @inputText(field("ordinal"), 'class -> "hidden")
+                @inputText(field("fieldType"), 'class -> "field-type hidden")
+            </span>
+        </div>
     </div>
 }
 
-@main("CoordCMS") {
+@main("CoordCMS", scripts) {
+
+    @eventPagesFormMustache()
+
     <h2>@eventName Pages</h2>
-    @form(routes.EventPagesController.createEventPages(eventId), 'class -> "panel panel-default") {
-        <!-- TODO sort by ordinal -->
-        <fieldset class="panel-body">
-        @repeat(pages("pages"), min = 1) { page =>
-                <div class="page" data-ordinal="@page("ordinal")">
-                    @inputText(page("title"), '_label -> "Title", 'class -> "form-control")
-                    @repeat(page("sections"), min = 1) { section =>
-                        @sectionItem(section)
-                    }
-                </div>
-        }
+    @form(routes.EventPagesController.createEventPages(eventId), 'class -> "page-form") {
+        <fieldset>
+            <div class="pages">
+
+                @repeat(pages("pages"), min = 0) { page =>
+                    <div class="page panel panel-default">
+                        <div class="panel-heading">Page @page("ordinal").value.getOrElse("")</div>
+                        <div class="panel-body clearfix">
+                            @inputText(page("title"), '_label -> "Page Title", 'class -> "form-control", 'placeholder -> "Page title")
+                            <span class="hidden">@inputText(page("ordinal"), 'class -> "hidden")</span>
+
+                            <div class="sections">
+                                @repeat(page("sections"), min = 0) { section =>
+                                    @sectionItem(section)
+                                }
+                            </div>
+
+                            <a class="pull-right btn btn-primary add-section-btn">Add section</a>
+                        </div>
+                    </div>
+                }
+
+            </div><!-- /.pages -->
+            <input class="btn btn-default" type="submit">
         </fieldset>
     }
 }

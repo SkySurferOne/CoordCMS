@@ -1,4 +1,12 @@
-@(title: String)(content: Html)(implicit webJarAssets: WebJarAssets)
+@(
+title: String,
+scripts: List[String] = List(),
+styles: List[String] = List()
+)(
+content: Html
+)(
+implicit webJarAssets: WebJarAssets
+)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,6 +17,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel='stylesheet' href='@routes.WebJarAssets.at(webJarAssets.locate("css/bootstrap.min.css"))'>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+
+        @for(style <- styles) {
+            <link rel="stylesheet" media="screen" type="text/css" href="@routes.Assets.versioned(style)" />
+        }
+
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
 
     </head>
@@ -36,8 +49,14 @@
             @content
         </div>
 
-        <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
+
         <script src="@routes.WebJarAssets.at(webJarAssets.locate("jquery.min.js"))" type="text/javascript"></script>
         <script src="@routes.WebJarAssets.at(webJarAssets.locate("js/bootstrap.min.js"))" type="text/javascript"></script>
+        <script src="@routes.WebJarAssets.at(webJarAssets.locate("mustache.min.js"))" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
+        @for(script <- scripts) {
+            <script type="text/javascript" src="@routes.Assets.versioned(script)"></script>
+        }
+
     </body>
 </html>

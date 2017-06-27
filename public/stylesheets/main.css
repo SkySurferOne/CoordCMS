@@ -31,9 +31,68 @@ html, body {
     cursor: pointer;
 }
 
+.hide {
+    display: none;
+}
+
 @media (max-width: 767px) {
     .btn-new-event {
         float: none;
         margin-bottom: 20px;
     }
+}
+
+/*
+    Pages form
+*/
+
+.section:first-of-type {
+    margin-top: 10px;
+}
+
+.section .field:first-of-type {
+    margin-top: 10px;
+}
+
+.page-form .btn {
+  margin-top: 10px;
+}
+
+.fields {
+}
+
+.panel-primary {
+    background-color: #d9edf7;
+}
+
+.panel-success {
+    background-color: #dff0d8;
+}
+
+.btn-panel {
+    display: inline-block;
+    margin-left: 10px;
+    line-height: 1.42857143;
+    text-align: center;
+    cursor: pointer;
+}
+
+.btn-panel-field {
+    color: #88c389;
+}
+
+.btn-panel-field:hover {
+     color: rgb(60, 118, 61);
+}
+
+.btn-panel-section {
+    color: white;
+}
+
+.btn-panel-section:hover {
+     color: white;
+}
+
+dl {
+    margin: 0;
 }

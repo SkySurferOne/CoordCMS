@@ -1,0 +1,94 @@
+@()
+
+<script id="page-template-id" type="text/x-handlebars-template">pages_{{ind}}_</script>
+<script id="page-template-name" type="text/x-handlebars-template">pages[{{ind}}].</script>
+
+<script id="page-template" type="text/x-handlebars-template">
+    <div class="page panel panel-default">
+        <div class="panel-heading">Page {{compNum}}</div>
+        <div class="panel-body clearfix">
+            <label for="{{> id}}title">Page Title</label>
+            <input type="text" id="{{> id}}title" name="{{> name}}title" value="" class="form-control" placeholder="Page title">
+            <input type="text" id="{{> id}}ordinal" name="{{> name}}ordinal" value="{{compNum}}" class="hidden">
+            <div class="sections"></div>
+            <a class="pull-right btn btn-primary add-section-btn">Add section</a>
+        </div>
+    </div>
+</script>
+
+<script id="section-template-id" type="text/x-handlebars-template">pages_{{pageInd}}_sections_{{ind}}_</script>
+<script id="section-template-name" type="text/x-handlebars-template">pages[{{pageInd}}].sections[{{ind}}].</script>
+
+<script id="section-template" type="text/x-handlebars-template">
+    <div class="panel panel-primary section">
+        <div class="panel-heading">
+            <span class="header">Section {{compNum}}</span>
+            <a class="btn-panel btn-panel-section btn-panel-section-remove pull-right">
+                <span class="glyphicon glyphicon-remove-circle"></span>
+            </a>
+            <a class="btn-panel btn-panel-section btn-panel-section-up pull-right">
+                <span class="glyphicon glyphicon-menu-up"></span>
+                <span class="glyphicon glyphicon-menu-down hidden"></span>
+            </a>
+        </div>
+        <div class="panel-body">
+            <label for="{{> id}}title">Section Title</label>
+            <input class="form-control" id="{{> id}}title" name="{{> name}}title" placeholder="Section title" type="text">
+
+            <input type="text" id="{{> id}}ordinal" name="{{> name}}ordinal" value="{{compNum}}" class="hidden">
+
+            <div class="clearfix fields"></div>
+
+            <div class="btn-group pull-right">
+                <button aria-expanded="false" aria-haspopup="true" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                    Add field
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="add-field add-heading-btn" data-type="Heading" href="#">Heading</a>
+                        <a class="add-field add-paragraph-btn" data-type="Paragraph" href="#">Paragraph</a>
+                        <a class="add-field add-image-btn" data-type="Image" href="#">Image</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="field-template-id" type="text/x-handlebars-template">pages_{{pageInd}}_sections_{{sectionInd}}_fields_{{ind}}_</script>
+<script id="field-template-name" type="text/x-handlebars-template">pages[{{pageInd}}].sections[{{sectionInd}}].fields[{{ind}}].</script>
+
+<script id="field-template" type="text/x-handlebars-template">
+    <div class="field page-form panel panel-success">
+        <div class="panel-heading clearfix">
+            <span class="header">{{type}}</span>
+            <a class="btn-panel btn-panel-field btn-panel-field-remove pull-right">
+                <span class="glyphicon glyphicon-remove-circle"></span>
+            </a>
+            <a class="btn-panel btn-panel-field btn-panel-field-up pull-right">
+                <span class="glyphicon glyphicon-menu-up"></span>
+                <span class="glyphicon glyphicon-menu-down hidden"></span>
+            </a>
+        </div>
+        <div class="panel-body">
+            <div class="field-header field-paragraph">
+                <label for="{{> id}}content">Field Content</label>
+                <input class="field-content form-control" id="{{> id}}content"
+                name="{{> name}}content" placeholder="Content" type="text">
+            </div>
+
+            <div class="field-image">
+                <label for="{{> id}}url">Image Url</label>
+                <input class="field-url form-control" id="{{> id}}url" name="{{> name}}url" placeholder="Image Url" type="text">
+
+                <label for="{{> id}}description">Image Description</label>
+                <input class="field-description form-control" id="{{> id}}description"
+                name="{{> name}}description" placeholder="Image Description" type="text">
+            </div>
+
+            <input type="text" id="{{> id}}ordinal" name="{{> name}}ordinal" value="{{compNum}}" class="hidden">
+            <input type="text" id="{{> id}}fieldType" name="{{> name}}fieldType" value="{{type}}" class="field-type hidden">
+        </div>
+    </div>
+</script>

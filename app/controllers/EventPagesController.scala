@@ -5,11 +5,13 @@ import javax.inject.{Inject, Singleton}
 import dao.EventDAO
 import models.{Event, EventCategory, FieldType}
 import models.FieldType.FieldType
+import play.Logger
 import play.api.data.{Form, FormError, Forms}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, Controller}
 import play.api.data.Forms.{mapping, _}
 import play.api.data.format.Formatter
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -32,12 +34,16 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val messagesApi: Me
       pagesForm.bindFromRequest.fold(
         formWithErrors => {
           eventDAO.findById(eventId).map {
-              case Some(event) => BadRequest(views.html.eventPagesForm(eventId, event.name, formWithErrors))
+              case Some(event) => {
+                Logger.debug(formWithErrors.toString)
+                BadRequest(views.html.eventPagesForm(eventId, event.name, formWithErrors))
+              }
               case None => NotFound(views.html.notFound("404 - Event not found"))
           }
         },
         pagesData => {
           // create pages, sections ect
+          Logger.debug(pagesData.toString)
           Future.successful(Redirect(routes.HomeController.index()))
         }
       )
@@ -48,7 +54,7 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val messagesApi: Me
 object EventPagesController {
 
   case class PagesDTO(pages: List[PageDTO])
-  case class PageDTO(eventId: Long, ordinal: Int, title: String, sections: List[SectionDTO])
+  case class PageDTO(ordinal: Int, title: String, sections: List[SectionDTO])
   case class SectionDTO(ordinal: Int, title: String, fields: List[FieldDTO])
   case class FieldDTO(fieldType: FieldType, content: String, ordinal: Int, url: String, description: String)
 
@@ -84,7 +90,6 @@ object EventPagesController {
   )(SectionDTO.apply)(SectionDTO.unapply)
 
   private val pageMapping = mapping(
-    "eventId" -> longNumber,
     "ordinal" -> number,
     "title" -> nonEmptyText,
     "sections" -> list(
@@ -92,11 +97,15 @@ object EventPagesController {
     )
   )(PageDTO.apply)(PageDTO.unapply)
 
+  def nonEmptyList[T]: Constraint[List[T]] = Constraint[List[T]]("constraint.required") { o =>
+    if (o.nonEmpty) Valid else Invalid(ValidationError("error.required"))
+  }
+
   var pagesForm = Form(
     mapping(
       "pages" -> list(
         pageMapping
-      )
+      ).verifying(nonEmptyList)
     )(PagesDTO.apply)(PagesDTO.unapply)
   )
 }

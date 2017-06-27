@@ -15,6 +15,7 @@ libraryDependencies += "com.h2database" % "h2" % "1.4.195"
 libraryDependencies += "org.webjars" %% "webjars-play" % "2.5.0"
 libraryDependencies += "org.webjars" % "bootstrap" % "3.3.7-1"
 libraryDependencies += "org.webjars" % "jquery" % "3.2.1"
+libraryDependencies += "org.webjars.bower" % "mustache" % "2.3.0"
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.example.controllers._"
