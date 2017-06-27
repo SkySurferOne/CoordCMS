@@ -26,4 +26,11 @@ class PagesApiController @Inject()(pageDAO: PageDAO)(implicit ec: ExecutionConte
         pages => Ok(Json.toJson(pages))
       }
   }
+
+  def getPageById(id: Long) = Action.async{
+    implicit request =>
+      pageDAO.findByPageId(id).map{
+        page => Ok(Json.toJson(page))
+      }
+  }
 }

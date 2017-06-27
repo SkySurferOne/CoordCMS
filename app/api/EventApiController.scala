@@ -46,13 +46,22 @@ class EventApiController @Inject()(eventDAO: EventDAO)(implicit ec: ExecutionCon
       }
   }
 
+  def getEventById(id: Long) = Action.async{
+    implicit request =>{
+      eventDAO.findById(id).map{
+        case Some(event) => Ok(Json.toJson(event))
+        case None => NotFound(Json.toJson(Seq.empty[Event]))
+      }
+    }
+  }
+
   def createEvent = Action.async(parse.json) { implicit request =>
     val eventResult = request.body.validate[Event]
     eventResult.fold(
-      errors => {
+    errors => {
         Future.successful(BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toJson(errors))))
       },
-      event => {
+    event => {
         eventDAO.insert(event) map {
           e =>  Ok(Json.obj("status" -> "OK", "message" -> ("Event '" + event.name + "' saved with id "+ e +".")))
         } recover {

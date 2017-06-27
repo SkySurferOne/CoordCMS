@@ -32,6 +32,11 @@ class PageDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider, val pageDA
     db.run(q)
   }
 
+  def findByPageId(pageId: Long): Future[Option[Page]] = {
+    val q = pages.filter(_.id === pageId).result.headOption
+    db.run(q)
+  }
+
   def findByEventIdAndOrdering(eventId: Long, ordering: Int): Future[Option[Page]] = {
     val q = pages.filter(e => e.eventId === eventId && e.ordinal === ordering).result.headOption
     db.run(q)
