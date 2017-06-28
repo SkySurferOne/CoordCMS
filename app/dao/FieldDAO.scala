@@ -52,7 +52,15 @@ class FieldDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
       h <- db.run(headings.result)
     } yield i ++ p ++ h
 
-  def tmpall(): Future[Seq[Heading]] = {
+  def getAllImages: Future[Seq[Image]] = {
+    db.run(images.result)
+  }
+
+  def getAllParagraphs: Future[Seq[Paragraph]] = {
+    db.run(paragraphs.result)
+  }
+
+  def getAllHeadings: Future[Seq[Heading]] = {
     db.run(headings.result)
   }
 

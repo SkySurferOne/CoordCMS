@@ -50,7 +50,7 @@ class EventApiController @Inject()(eventDAO: EventDAO)(implicit ec: ExecutionCon
     implicit request =>{
       eventDAO.findById(id).map{
         case Some(event) => Ok(Json.toJson(event))
-        case None => NotFound(Json.toJson(Seq.empty[Event]))
+        case None => NotFound(Json.obj())
       }
     }
   }
