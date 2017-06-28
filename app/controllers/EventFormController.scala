@@ -25,8 +25,8 @@ class EventFormController @Inject()(val eventDAO: EventDAO, val messagesApi: Mes
         },
         eventData => {
           val event = Event(Option.empty, eventData.name, eventData.description, eventData.category, eventData.startDateTime, eventData.endDateTime)
-          eventDAO.insert(event).map { id =>
-            Redirect(routes.HomeController.index())
+          eventDAO.insert(event).map { eventId =>
+            Redirect(routes.EventPagesController.showEventPagesForm(eventId))
           }
         }
       )

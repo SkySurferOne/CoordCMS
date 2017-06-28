@@ -58,6 +58,10 @@ html, body {
   margin-top: 10px;
 }
 
+.page-form {
+    margin-bottom: 10px;
+}
+
 .fields {
 }
 
@@ -93,6 +97,6 @@ html, body {
      color: white;
 }
 
-dl {
+.page-form dl {
     margin: 0;
 }

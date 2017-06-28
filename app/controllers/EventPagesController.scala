@@ -2,8 +2,8 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import dao.EventDAO
-import models.{Event, EventCategory, FieldType}
+import dao.{EventDAO, FieldDAO, PageDAO, SectionDAO}
+import models._
 import models.FieldType.FieldType
 import play.Logger
 import play.api.data.{Form, FormError, Forms}
@@ -17,7 +17,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class EventPagesController @Inject()(val eventDAO: EventDAO, val messagesApi: MessagesApi, implicit val webJarAssets: WebJarAssets)
+class EventPagesController @Inject()(val eventDAO: EventDAO, val pageDAO: PageDAO, val sectionDAO: SectionDAO, val fieldDAO: FieldDAO,
+                                     val messagesApi: MessagesApi, implicit val webJarAssets: WebJarAssets)
                                     (implicit executionContext: ExecutionContext) extends Controller with I18nSupport {
   import EventPagesController._
 
@@ -44,7 +45,36 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val messagesApi: Me
         pagesData => {
           // create pages, sections ect
           Logger.debug(pagesData.toString)
-          Future.successful(Redirect(routes.HomeController.index()))
+
+          val future = pagesData.pages.map { pageDTO =>
+            val page = Page(Option.empty, eventId, pageDTO.ordinal, pageDTO.title)
+
+            // add pages
+            pageDAO.insert(page).map { pageId =>
+              pageDTO.sections.map { sectionDTO =>
+                val section = Section(Option.empty, pageId, sectionDTO.ordinal, sectionDTO.title)
+
+                // add sections
+                sectionDAO.insert(section).map { sectionId =>
+                  sectionDTO.fields.map { fieldDTO =>
+                    val field = fieldDTO.fieldType match {
+                      case FieldType.Heading => Heading(Option.empty, sectionId, fieldDTO.ordinal, fieldDTO.content)
+                      case FieldType.Paragraph => Paragraph(Option.empty, sectionId, fieldDTO.ordinal, fieldDTO.content)
+                      case FieldType.Image => Image(Option.empty, sectionId, fieldDTO.ordinal, fieldDTO.url, fieldDTO.description)
+                    }
+
+                    // insert fields
+                    fieldDAO.insert(field)
+                  }
+                }
+              }
+            }
+          }
+
+          Future.sequence(future).map { _ =>
+            // TODO redirect to single view
+            Redirect(routes.HomeController.index())
+          }
         }
       )
   }

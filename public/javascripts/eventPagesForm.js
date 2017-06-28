@@ -111,6 +111,81 @@
             $btn.find('span').toggleClass('hidden');
             $body.slideToggle();
         });
+
+        $dom.pages.on('click', '.btn-panel-field-remove, .btn-panel-section-remove', function(e) {
+            var $compToDelete = $(e.currentTarget).parent().parent();
+            var compInd = $compToDelete.index();
+            var $siblings = $compToDelete.find('~ *');
+
+            $siblings.each(function(i, element) {
+                var $element = $(element);
+
+                if ($element.hasClass('section')) {
+                    fixSectionEnumeration($element, compInd + i);
+                } else if($element.hasClass('field')) {
+                    fixFieldEnumeration($element, compInd + i);
+                }
+            });
+
+            $compToDelete.remove();
+        });
+    }
+
+    function fixFieldEnumeration($field, ind) {
+        var compNum = ind + 1;
+
+        $field.find('[for*=pages_]').each(function(i, element) {
+            var forAttr = element.getAttribute('for').split('_');
+            forAttr[5] = ind.toString();
+            forAttr = forAttr.join('_');
+            element.setAttribute('for', forAttr);
+        });
+
+        $field.find('[id*=pages_]').each(function(i, element) {
+            var idAttr = element.getAttribute('id').split('_');
+            idAttr[5] = ind.toString();
+            idAttr = idAttr.join('_');
+
+            var nameAttr = element.getAttribute('name').split('.');
+            nameAttr[2] = 'fields['+ind.toString()+']';
+            if(nameAttr[3] === 'ordinal') {
+                element.setAttribute('value', compNum);
+            }
+            nameAttr = nameAttr.join('.');
+
+            element.setAttribute('id', idAttr);
+            element.setAttribute('name', nameAttr);
+        });
+    }
+
+    function fixSectionEnumeration($section, ind) {
+        var compNum = ind + 1;
+
+        $section.find('[for*=pages_]').each(function(i, element) {
+            var forAttr = element.getAttribute('for').split('_');
+            forAttr[3] = ind.toString();
+            forAttr = forAttr.join('_');
+            element.setAttribute('for', forAttr);
+        });
+
+        $section.find('[id*=pages_]').each(function(i, element) {
+            var idAttr = element.getAttribute('id').split('_');
+            idAttr[3] = ind.toString();
+            idAttr = idAttr.join('_');
+
+            var nameAttr = element.getAttribute('name').split('.');
+            nameAttr[1] = 'sections['+ind.toString()+']';
+            if(nameAttr[2] === 'ordinal') {
+                element.setAttribute('value', compNum);
+            }
+            nameAttr = nameAttr.join('.');
+
+            console.log(idAttr, nameAttr);
+
+            element.setAttribute('id', idAttr);
+            element.setAttribute('name', nameAttr);
+        });
+        $section.find('> .panel-heading .header').html('Section ' + compNum);
     }
 
     function loadTemplates() {
