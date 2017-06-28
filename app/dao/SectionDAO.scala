@@ -29,6 +29,11 @@ class SectionDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvide
     db.run(q)
   }
 
+  def findBySectionId(id: Long): Future[Seq[Section]] = {
+    val q = sections.filter(_.id === id).result
+    db.run(q)
+  }
+
   // only for test purpose
   def all(): Future[Seq[Section]] =
     db.run(sections.result)

@@ -37,6 +37,12 @@ GET     /webjars/*file              controllers.WebJarAssets.at(file)
 # API ROUTES
 
 GET     /api/events                 api.EventApiController.index
+GET     /api/events/:id             api.EventApiController.getEventById(id: Long)
+GET     /api/events/:id/pages       api.PagesApiController.getPagesByEventId(id: Long)
+
 # create event (only for demonstation)
 POST    /api/events                 api.EventApiController.createEvent
+
+GET     /api/pages/:id              api.PagesApiController.getPageById(id: Long)
+GET     /api/pages/:id/sections     api.SectionApiController.getSectionsByPageId(id: Long)
 
