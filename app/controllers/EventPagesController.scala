@@ -79,6 +79,40 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val pageDAO: PageDA
       )
   }
 
+  def updateEventPage(eventId: Long) = Action.async{
+    implicit request =>
+      eventDAO.findById(eventId).map{
+        case Some(event) => Ok(views.html.eventPagesForm(eventId, event.name, pagesForm))
+        case None => NotFound(views.html.notFound("404 - Page not found"))
+      }
+  }
+
+  def createPagesDTO(event: Event): Seq[PageDTO] = {
+    pageDAO.findByEventId(event.id.get).
+      value.
+      get.
+      get.
+      map(page => PageDTO(
+      page.ordinal,
+      page.title,
+      sectionDAO.
+        findByPageId(page.id.get).
+        value.
+        get.
+        get.
+        map(section => SectionDTO(
+          section.ordinal,
+          section.title,
+          fieldDAO.
+            findBySectionId(section.id.get).
+            value.
+            get.get.
+            map(field => field match{
+              case image: Image => FieldDTO(FieldType.Image, "", image.ordinal, image.url, image.description)
+              case heading: Heading => FieldDTO(FieldType.Heading, heading.content, heading.ordinal, "", "")
+              case paragraph: Paragraph => FieldDTO(FieldType.Paragraph, paragraph.content, paragraph.ordinal, "", "")
+            }).toList)).toList))
+  }
 }
 
 object EventPagesController {
