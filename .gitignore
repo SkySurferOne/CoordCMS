@@ -8,3 +8,4 @@ target
 /RUNNING_PID
 *.log
 *.mv.db
+node_modules
