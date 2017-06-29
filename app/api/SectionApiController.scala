@@ -8,7 +8,7 @@ import models._
 import play.api.libs.json._
 import play.api.mvc._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext}
 
 
 class SectionApiController @Inject()(sectionDAO: SectionDAO, fieldDAO: FieldDAO)(implicit ec: ExecutionContext) extends Controller {
@@ -22,9 +22,9 @@ class SectionApiController @Inject()(sectionDAO: SectionDAO, fieldDAO: FieldDAO)
     )
   }
 
-  def getSectionsByPageId(id: Long) = Action.async {
+  def getSectionsByPageId(pageId: Long) = Action.async {
     implicit request => {
-      val sections = sectionDAO.findByPageId(id)
+      val sections = sectionDAO.findByPageId(pageId)
       val images = fieldDAO.getAllImages
       val headings = fieldDAO.getAllHeadings
       val paragraphs = fieldDAO.getAllParagraphs
@@ -34,9 +34,9 @@ class SectionApiController @Inject()(sectionDAO: SectionDAO, fieldDAO: FieldDAO)
         h <- headings
         p <- paragraphs
       } yield {
-        val fieldDTOs = i.map(image => FieldDTO(FieldType.Image, "", image.ordinal, image.url, image.description)) ++
-          h.map(heading => FieldDTO(FieldType.Heading, heading.content, heading.ordinal, "", "")) ++
-          p.map(paragraph => FieldDTO(FieldType.Paragraph, paragraph.content, paragraph.ordinal, "", ""))
+        val fieldDTOs = i.map(image => (image.sectionId, FieldDTO(FieldType.Image, "", image.ordinal, image.url, image.description))) ++
+          h.map(heading => (heading.sectionId, FieldDTO(FieldType.Heading, heading.content, heading.ordinal, "", ""))) ++
+          p.map(paragraph => (paragraph.sectionId, FieldDTO(FieldType.Paragraph, paragraph.content, paragraph.ordinal, "", "")))
         if (s.isEmpty) {
           NotFound(Json.arr())
         }
@@ -48,7 +48,10 @@ class SectionApiController @Inject()(sectionDAO: SectionDAO, fieldDAO: FieldDAO)
                 "pageid" -> s.pageId,
                 "ordinal" -> s.ordinal,
                 "title" -> s.title,
-                "fields" -> Json.toJson(fieldDTOs)
+                "fields" -> Json.toJson(fieldDTOs.filter(_._1 == s.id.get).map{
+                  case (_: Long, field: FieldDTO) =>
+                    Json.toJson(field)
+                })
               ))
             }
           }.reduce((s1, s2) => s1 ++ s2))
