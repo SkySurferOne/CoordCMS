@@ -23,11 +23,66 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val pageDAO: PageDA
   import EventPagesController._
 
   def showEventPagesForm(eventId: Long) = Action.async {
-    implicit request =>
-      eventDAO.findById(eventId).map {
-        case Some(event) => Ok(views.html.eventPagesForm(eventId, event.name, pagesForm))
-        case None => NotFound(views.html.notFound("404 - Event not found"))
+    implicit request => {
+      val eventFuture = eventDAO.findById(eventId)
+      val pagesFuture = pageDAO.findByEventId(eventId)
+      val sectionsFuture = sectionDAO.all()
+      val imagesFuture = fieldDAO.getAllImages
+      val headingsFuture = fieldDAO.getAllHeadings
+      val paragraphsFuture = fieldDAO.getAllParagraphs
+      for {
+        optionEvent <- eventFuture
+        pages <- pagesFuture
+        sections <- sectionsFuture
+        images <- imagesFuture
+        headings <- headingsFuture
+        paragraphs <- paragraphsFuture
+      } yield {
+        optionEvent match{
+          case Some(event) => {
+            val fieldsDTO = images.map(image => (image.sectionId, FieldDTO(
+              FieldType.Image,
+              "",
+              image.ordinal,
+              image.url,
+              image.description))) ++
+              headings.map(heading => (heading.sectionId, FieldDTO(
+                FieldType.Heading,
+                heading.content,
+                heading.ordinal,
+                "",
+                ""))) ++
+              paragraphs.map(paragraph => (paragraph.sectionId, FieldDTO(
+                FieldType.Paragraph,
+                paragraph.content,
+                paragraph.ordinal,
+                "",
+                "")))
+            val pageDTOList = pages.map {
+              page =>
+                PageDTO(
+                  page.ordinal,
+                  page.title,
+                  sections.filter(_.pageId == page.id.get).
+                    map { section =>
+                      SectionDTO(
+                        section.ordinal,
+                        section.title,
+                        fieldsDTO.filter(_._1 == section.id.get).
+                          map {
+                            case (_: Long, field: FieldDTO) => field
+                          }.toList)
+                    }.toList
+                )
+            }.toList
+            val form: Form[PagesDTO] = pagesForm.fill(PagesDTO(pageDTOList))
+            Ok(views.html.eventPagesForm(eventId, event.name, form))
+          }
+          case None => NotFound(views.html.notFound("404 - Page not found"))
+        }
       }
+
+    }
   }
 
   def createEventPages(eventId: Long) = Action.async {
@@ -35,11 +90,11 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val pageDAO: PageDA
       pagesForm.bindFromRequest.fold(
         formWithErrors => {
           eventDAO.findById(eventId).map {
-              case Some(event) => {
-                Logger.debug(formWithErrors.toString)
-                BadRequest(views.html.eventPagesForm(eventId, event.name, formWithErrors))
-              }
-              case None => NotFound(views.html.notFound("404 - Event not found"))
+            case Some(event) => {
+              Logger.debug(formWithErrors.toString)
+              BadRequest(views.html.eventPagesForm(eventId, event.name, formWithErrors))
+            }
+            case None => NotFound(views.html.notFound("404 - Event not found"))
           }
         },
         pagesData => {
@@ -77,41 +132,6 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val pageDAO: PageDA
           }
         }
       )
-  }
-
-  def updateEventPage(eventId: Long) = Action.async{
-    implicit request =>
-      eventDAO.findById(eventId).map{
-        case Some(event) => Ok(views.html.eventPagesForm(eventId, event.name, pagesForm))
-        case None => NotFound(views.html.notFound("404 - Page not found"))
-      }
-  }
-
-  def createPagesDTO(event: Event): Seq[PageDTO] = {
-    pageDAO.findByEventId(event.id.get).
-      value.
-      get.
-      get.
-      map(page => PageDTO(
-      page.ordinal,
-      page.title,
-      sectionDAO.
-        findByPageId(page.id.get).
-        value.
-        get.
-        get.
-        map(section => SectionDTO(
-          section.ordinal,
-          section.title,
-          fieldDAO.
-            findBySectionId(section.id.get).
-            value.
-            get.get.
-            map(field => field match{
-              case image: Image => FieldDTO(FieldType.Image, "", image.ordinal, image.url, image.description)
-              case heading: Heading => FieldDTO(FieldType.Heading, heading.content, heading.ordinal, "", "")
-              case paragraph: Paragraph => FieldDTO(FieldType.Paragraph, paragraph.content, paragraph.ordinal, "", "")
-            }).toList)).toList))
   }
 }
 
