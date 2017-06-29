@@ -3,6 +3,7 @@ package dao
 import javax.inject.Inject
 
 import models.{Event, Page}
+import play.Logger
 import play.api.db.slick.DatabaseConfigProvider
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -20,6 +21,7 @@ class PageDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider, val pageDA
   }
 
   def insert(entities: Seq[Page]): Future[String] = {
+    Logger.debug(entities.head.toString)
     db.run(pages ++= entities)
       .map { _ => "Collection successfully added" }
       .recover {
@@ -42,7 +44,20 @@ class PageDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider, val pageDA
     db.run(q)
   }
 
-  def update(updatedPage: Page) = ???
+  def update(updatedPage: Page): Future[String] = {
+    db.run(pages.filter(_.id === updatedPage.id.get).update(updatedPage)).map{ _ => "Page was successfully updated"}
+  }
+
+  def deleteAndInsert(newPage: Page, eventId: Long): Future[Long] = {
+    val pagesFuture = findByEventId(eventId)
+    for {
+      pages <- pagesFuture
+    }yield{
+      pages.map(page => delete(page.id.get))
+
+    }
+    insert(newPage)
+  }
 
   // It must delete all sections before
   def delete(id: Long): Future[Int] = {

@@ -105,7 +105,7 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val pageDAO: PageDA
             val page = Page(Option.empty, eventId, pageDTO.ordinal, pageDTO.title)
 
             // add pages
-            pageDAO.insert(page).map { pageId =>
+            pageDAO.deleteAndInsert(page, eventId).map { pageId =>
               pageDTO.sections.map { sectionDTO =>
                 val section = Section(Option.empty, pageId, sectionDTO.ordinal, sectionDTO.title)
 
