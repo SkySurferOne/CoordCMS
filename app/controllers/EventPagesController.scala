@@ -138,9 +138,9 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val pageDAO: PageDA
 object EventPagesController {
 
   case class PagesDTO(pages: List[PageDTO])
-  case class PageDTO(ordinal: Int, title: String, sections: List[SectionDTO])
-  case class SectionDTO(ordinal: Int, title: String, fields: List[FieldDTO])
-  case class FieldDTO(fieldType: FieldType, content: String, ordinal: Int, url: String, description: String)
+  case class PageDTO(id: Option[Long], ordinal: Int, title: String, sections: List[SectionDTO])
+  case class SectionDTO(id: Option[Long], ordinal: Int, title: String, fields: List[FieldDTO])
+  case class FieldDTO(id: Option[Long], fieldType: FieldType, content: String, ordinal: Int, url: String, description: String)
 
   implicit def fieldTypeFormat: Formatter[FieldType.FieldType] =
     new Formatter[FieldType.FieldType] {
@@ -158,6 +158,7 @@ object EventPagesController {
     }
 
   private val fieldMapping = mapping(
+    "id" -> optional(longNumber),
     "fieldType" -> Forms.of[FieldType.FieldType],
     "content" -> text,
     "ordinal" -> number,
@@ -166,6 +167,7 @@ object EventPagesController {
   )(FieldDTO.apply)(FieldDTO.unapply)
 
   private val sectionMapping = mapping(
+    "id" -> optional(longNumber),
     "ordinal" -> number,
     "title" -> nonEmptyText,
     "fields" -> list(
@@ -174,6 +176,7 @@ object EventPagesController {
   )(SectionDTO.apply)(SectionDTO.unapply)
 
   private val pageMapping = mapping(
+    "id" -> optional(longNumber),
     "ordinal" -> number,
     "title" -> nonEmptyText,
     "sections" -> list(

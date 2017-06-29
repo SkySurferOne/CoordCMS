@@ -1,0 +1,16 @@
+<section *ngIf="data" class="price">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 *ngIf="data.headings[0]">{{data.headings[0].content}}</h2>
+    </div>
+    <div class="panel-body">
+      <div *ngFor="let img of data.images" class="image-wrap">
+        <img src="{{img.url}}" alt="{{img.description}}">
+      </div>
+
+      <p *ngFor="let p of data.paragraphs">
+        {{p.content}}
+      </p>
+    </div>
+  </div>
+</section>

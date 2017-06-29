@@ -146,15 +146,18 @@
             idAttr[5] = ind.toString();
             idAttr = idAttr.join('_');
 
-            var nameAttr = element.getAttribute('name').split('.');
-            nameAttr[2] = 'fields['+ind.toString()+']';
-            if(nameAttr[3] === 'ordinal') {
-                element.setAttribute('value', compNum);
-            }
-            nameAttr = nameAttr.join('.');
-
             element.setAttribute('id', idAttr);
-            element.setAttribute('name', nameAttr);
+
+            if (element.hasAttribute("name")) {
+                var nameAttr = element.getAttribute('name').split('.');
+                nameAttr[2] = 'fields[' + ind.toString() + ']';
+                if (nameAttr[3] === 'ordinal') {
+                    element.setAttribute('value', compNum);
+                }
+                nameAttr = nameAttr.join('.');
+
+                element.setAttribute('name', nameAttr);
+            }
         });
     }
 
@@ -173,17 +176,18 @@
             idAttr[3] = ind.toString();
             idAttr = idAttr.join('_');
 
-            var nameAttr = element.getAttribute('name').split('.');
-            nameAttr[1] = 'sections['+ind.toString()+']';
-            if(nameAttr[2] === 'ordinal') {
-                element.setAttribute('value', compNum);
-            }
-            nameAttr = nameAttr.join('.');
-
-            console.log(idAttr, nameAttr);
-
             element.setAttribute('id', idAttr);
-            element.setAttribute('name', nameAttr);
+
+            if (element.hasAttribute("name")) {
+                var nameAttr = element.getAttribute('name').split('.');
+                nameAttr[1] = 'sections[' + ind.toString() + ']';
+                if (nameAttr[2] === 'ordinal') {
+                    element.setAttribute('value', compNum);
+                }
+                nameAttr = nameAttr.join('.');
+
+                element.setAttribute('name', nameAttr);
+            }
         });
         $section.find('> .panel-heading .header').html('Section ' + compNum);
     }
