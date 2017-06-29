@@ -41,18 +41,21 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val pageDAO: PageDA
         optionEvent match{
           case Some(event) => {
             val fieldsDTO = images.map(image => (image.sectionId, FieldDTO(
+              image.id,
               FieldType.Image,
               "",
               image.ordinal,
               image.url,
               image.description))) ++
               headings.map(heading => (heading.sectionId, FieldDTO(
+                heading.id,
                 FieldType.Heading,
                 heading.content,
                 heading.ordinal,
                 "",
                 ""))) ++
               paragraphs.map(paragraph => (paragraph.sectionId, FieldDTO(
+                paragraph.id,
                 FieldType.Paragraph,
                 paragraph.content,
                 paragraph.ordinal,
@@ -61,11 +64,13 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val pageDAO: PageDA
             val pageDTOList = pages.map {
               page =>
                 PageDTO(
+                  page.id,
                   page.ordinal,
                   page.title,
                   sections.filter(_.pageId == page.id.get).
                     map { section =>
                       SectionDTO(
+                        section.id,
                         section.ordinal,
                         section.title,
                         fieldsDTO.filter(_._1 == section.id.get).
@@ -99,27 +104,25 @@ class EventPagesController @Inject()(val eventDAO: EventDAO, val pageDAO: PageDA
         },
         pagesData => {
           // create pages, sections ect
-          Logger.debug(pagesData.toString)
-
           val future = pagesData.pages.map { pageDTO =>
-            val page = Page(Option.empty, eventId, pageDTO.ordinal, pageDTO.title)
+            val page = Page(pageDTO.id, eventId, pageDTO.ordinal, pageDTO.title)
 
             // add pages
-            pageDAO.deleteAndInsert(page, eventId).map { pageId =>
+            pageDAO.insertOrUpdate(page).map { pageId =>
               pageDTO.sections.map { sectionDTO =>
-                val section = Section(Option.empty, pageId, sectionDTO.ordinal, sectionDTO.title)
+                val section = Section(sectionDTO.id, pageId, sectionDTO.ordinal, sectionDTO.title)
 
                 // add sections
-                sectionDAO.insert(section).map { sectionId =>
+                sectionDAO.insertOrUpdate(section).map { sectionId =>
                   sectionDTO.fields.map { fieldDTO =>
                     val field = fieldDTO.fieldType match {
-                      case FieldType.Heading => Heading(Option.empty, sectionId, fieldDTO.ordinal, fieldDTO.content)
-                      case FieldType.Paragraph => Paragraph(Option.empty, sectionId, fieldDTO.ordinal, fieldDTO.content)
-                      case FieldType.Image => Image(Option.empty, sectionId, fieldDTO.ordinal, fieldDTO.url, fieldDTO.description)
+                      case FieldType.Heading => Heading(fieldDTO.id, sectionId, fieldDTO.ordinal, fieldDTO.content)
+                      case FieldType.Paragraph => Paragraph(fieldDTO.id, sectionId, fieldDTO.ordinal, fieldDTO.content)
+                      case FieldType.Image => Image(fieldDTO.id, sectionId, fieldDTO.ordinal, fieldDTO.url, fieldDTO.description)
                     }
 
                     // insert fields
-                    fieldDAO.insert(field)
+                    fieldDAO.insertOrUpdate(field)
                   }
                 }
               }

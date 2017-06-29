@@ -48,15 +48,14 @@ class PageDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider, val pageDA
     db.run(pages.filter(_.id === updatedPage.id.get).update(updatedPage)).map{ _ => "Page was successfully updated"}
   }
 
-  def deleteAndInsert(newPage: Page, eventId: Long): Future[Long] = {
-    val pagesFuture = findByEventId(eventId)
-    for {
-      pages <- pagesFuture
-    }yield{
-      pages.map(page => delete(page.id.get))
-
+  def insertOrUpdate(newPage: Page): Future[Long] = {
+    if(newPage.id.isDefined){
+      update(newPage)
+      Future(newPage.id.get)
     }
-    insert(newPage)
+    else{
+      insert(newPage)
+    }
   }
 
   // It must delete all sections before

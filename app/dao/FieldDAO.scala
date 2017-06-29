@@ -28,6 +28,39 @@ class FieldDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     Future.sequence(entities.map(field => insert(field)))
   }
 
+  def insertOrUpdate(newField: Field): Future[Long] = {
+    newField match {
+      case image: Image =>{
+        if(image.id.isDefined){
+          db.run(images.filter(_.id === image.id.get).update(image))
+          Future(image.id.get)
+        }
+        else{
+          db.run(images returning images.map(_.id) += image)
+        }
+      }
+      case paragraph: Paragraph => {
+        if(paragraph.id.isDefined){
+          db.run(paragraphs.filter(_.id === paragraph.id.get).update(paragraph))
+          Future(paragraph.id.get)
+        }
+        else{
+          db.run(paragraphs returning paragraphs.map(_.id) += paragraph)
+        }
+      }
+      case heading: Heading => {
+        if(heading.id.isDefined){
+          db.run(headings.filter(_.id === heading.id.get).update(heading))
+          Future(heading.id.get)
+        }
+        else{
+          db.run(headings returning headings.map(_.id) += heading)
+        }
+      }
+      case _ => throw new Exception("No such type")
+    }
+  }
+
   def findBySectionId(sectionId: Long): Future[Seq[Field]] = {
     val q = images.filter(_.sectionId === sectionId).result
     val q1 = paragraphs.filter(_.sectionId === sectionId).result

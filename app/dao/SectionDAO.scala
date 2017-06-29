@@ -1,8 +1,10 @@
 package dao
 
 import javax.inject.Inject
-import models.{Section}
+
+import models.{Page, Section}
 import play.api.db.slick.DatabaseConfigProvider
+
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -38,12 +40,24 @@ class SectionDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvide
   def all(): Future[Seq[Section]] =
     db.run(sections.result)
 
-  def update(updatedSection: Section) = ???
+  def update(updatedSection: Section):Future[String] = {
+    db.run(sections.filter(_.id === updatedSection.id.get).update(updatedSection)).map{ _ => "Section was successfully updated"}
+  }
 
   // It must delete all fields before
   def delete(id: Long): Future[Int] = {
     val q = sections.filter(_.id === id).delete
     db.run(q)
+  }
+
+  def insertOrUpdate(newSection: Section):Future[Long] = {
+    if(newSection.id.isDefined){
+      update(newSection)
+      Future(newSection.id.get)
+    }
+    else{
+      insert(newSection)
+    }
   }
 
   def count(): Future[Int] =
