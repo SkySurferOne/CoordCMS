@@ -34,9 +34,9 @@ class SectionApiController @Inject()(sectionDAO: SectionDAO, fieldDAO: FieldDAO)
         h <- headings
         p <- paragraphs
       } yield {
-        val fieldDTOs = i.map(image => (image.sectionId, FieldDTO(FieldType.Image, "", image.ordinal, image.url, image.description))) ++
-          h.map(heading => (heading.sectionId, FieldDTO(FieldType.Heading, heading.content, heading.ordinal, "", ""))) ++
-          p.map(paragraph => (paragraph.sectionId, FieldDTO(FieldType.Paragraph, paragraph.content, paragraph.ordinal, "", "")))
+        val fieldDTOs = i.map(image => (image.sectionId, FieldDTO(image.id, FieldType.Image, "", image.ordinal, image.url, image.description))) ++
+          h.map(heading => (heading.sectionId, FieldDTO(heading.id, FieldType.Heading, heading.content, heading.ordinal, "", ""))) ++
+          p.map(paragraph => (paragraph.sectionId, FieldDTO(paragraph.id, FieldType.Paragraph, paragraph.content, paragraph.ordinal, "", "")))
         if (s.isEmpty) {
           NotFound(Json.arr())
         }

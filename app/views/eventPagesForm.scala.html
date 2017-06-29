@@ -27,7 +27,10 @@ webJarAssets: WebJarAssets
         </div>
         <div class="panel-body">
             @inputText(section("title"), '_label -> "Section Title", 'class -> "form-control", 'placeholder -> "Section title")
-            <span class="hidden">@inputText(section("ordinal"), 'class -> "form-control hidden")</span>
+            <span class="hidden">
+                @inputText(section("ordinal"), 'class -> "hidden")
+                @inputText(section("id"), 'class -> "hidden")
+            </span>
 
             <div class="clearfix fields">
                 @repeat(section("fields"), min = 0) { field =>
@@ -85,6 +88,7 @@ webJarAssets: WebJarAssets
             <span class="hidden">
                 @inputText(field("ordinal"), 'class -> "hidden")
                 @inputText(field("fieldType"), 'class -> "field-type hidden")
+                @inputText(field("id"), 'class -> "hidden")
             </span>
         </div>
     </div>
@@ -104,7 +108,10 @@ webJarAssets: WebJarAssets
                         <div class="panel-heading">Page @page("ordinal").value.getOrElse("")</div>
                         <div class="panel-body clearfix">
                             @inputText(page("title"), '_label -> "Page Title", 'class -> "form-control", 'placeholder -> "Page title")
-                            <span class="hidden">@inputText(page("ordinal"), 'class -> "hidden")</span>
+                            <span class="hidden">
+                                @inputText(page("ordinal"), 'class -> "hidden")
+                                @inputText(page("id"), 'class -> "hidden")
+                            </span>
 
                             <div class="sections">
                                 @repeat(page("sections"), min = 0) { section =>
