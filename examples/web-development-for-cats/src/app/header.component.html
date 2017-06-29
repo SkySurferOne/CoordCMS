@@ -1,0 +1,10 @@
+<header *ngIf="data" class="header">
+  <h1 *ngIf="data.headings[0]">{{data.headings[0].content}}</h1>
+  <img *ngIf="data.images[0]" src="{{data.images[0].url}}" alt="{{data.images[0].description}}">
+
+  <div class="text">
+    <p *ngFor="let p of data.paragraphs">
+      {{p.content}}
+    </p>
+  </div>
+</header>

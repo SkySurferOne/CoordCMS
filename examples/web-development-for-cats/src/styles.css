@@ -1,0 +1,98 @@
+header, section {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+section::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+h2 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+body {
+  font-size: 16px;
+}
+
+p {
+  font-size: 1.2em;
+}
+
+.image-wrap {
+  display: inline-block;
+}
+
+.image-wrap img {
+  width: 300px;
+  max-width: 100%;
+  height: auto;
+  padding: 0 15px;
+}
+
+.header {
+  position: relative;
+  height: 300px;
+}
+
+.header::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+}
+
+.header img {
+  width: 100%;
+  height: 300px;
+  display: block;
+}
+
+.header h1 {
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  color: white;
+  transform: translate(-50%, -50%);
+}
+
+.header .text {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  width: 100%;
+  color: white;
+  transform: translate(-50%, 0);
+}
+
+.price .panel-body {
+  padding-bottom: 20px;
+}
+
+.price .image-wrap, .price p {
+  float: left;
+}
+
+.contact .image-wrap, .contact p {
+  float: right;
+}
+
+.about .images {
+  margin-bottom: 15px;
+}
+
+.footer {
+  width: 100%;
+  background-color: #282828;
+  color: #848484;
+  padding: 15px;
+  text-align: center;
+}
